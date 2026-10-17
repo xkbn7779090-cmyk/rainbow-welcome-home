@@ -18,7 +18,7 @@ test("serves existing static assets without a fallback", async () => {
   assert.deepEqual(calls, ["/assets/app.js"]);
 });
 
-test("falls back to index.html for an unknown app route", async () => {
+test("unknown HTML routes return a real 404 and a noindex page", async () => {
   const calls = [];
   const response = await worker.fetch(
     new Request("https://example.test/flow/step-two?source=share", {
@@ -29,16 +29,17 @@ test("falls back to index.html for an unknown app route", async () => {
         fetch: async (request) => {
           const url = new URL(request.url);
           calls.push(url.pathname + url.search);
-          return new Response(url.pathname === "/index.html" ? "app" : "missing", {
-            status: url.pathname === "/index.html" ? 200 : 404,
+          return new Response(url.pathname === "/404.html" ? "missing page" : "missing", {
+            status: url.pathname === "/404.html" ? 200 : 404,
           });
         },
       },
     },
   );
 
-  assert.equal(response.status, 200);
-  assert.deepEqual(calls, ["/flow/step-two?source=share", "/index.html"]);
+  assert.equal(response.status, 404);
+  assert.equal(response.headers.get("X-Robots-Tag"), "noindex");
+  assert.deepEqual(calls, ["/flow/step-two?source=share", "/404.html"]);
 });
 
 test("does not turn missing API or write requests into the app shell", async () => {

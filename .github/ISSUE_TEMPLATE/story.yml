@@ -1,0 +1,40 @@
+name: Share a Rainbow story / Поделиться историей
+description: Offer a personal story for the Welcome Home Center. Proposals are public and reviewed before publication on the site.
+title: '[Story] '
+body:
+  - type: markdown
+    attributes:
+      value: 'This proposal is public. Please do not include private contacts or current Gathering coordinates. Stories and photographs are reviewed before appearing on the website.'
+  - type: input
+    id: byline
+    attributes:
+      label: Name or pseudonym / Имя или псевдоним
+      description: How should the story be credited?
+    validations:
+      required: true
+  - type: input
+    id: context
+    attributes:
+      label: Context / Контекст
+      description: Year and broad region, if you want to share them. No precise location is needed.
+  - type: textarea
+    id: story
+    attributes:
+      label: Your story / Твоя история
+      description: Write in any of the site's six languages. First-person experience is welcome; please distinguish memories from facts you can verify.
+    validations:
+      required: true
+  - type: textarea
+    id: photos
+    attributes:
+      label: Photographs and credits / Фотографии и авторство
+      description: Optional. Include author, permission or license, and whether people in the image consent to publication.
+  - type: checkboxes
+    id: consent
+    attributes:
+      label: Permission / Разрешение
+      options:
+        - label: I wrote this story and allow it to be published on the Rainbow Welcome Home Center with the credit above.
+          required: true
+        - label: I have permission to publish any attached images and from identifiable people shown, or I have attached no photographs.
+          required: true

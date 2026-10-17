@@ -1,0 +1,4 @@
+export const codes=['ru','en','nl','de','fr','es'];
+export function isAppRoute(route){return /^(home|start|first-time|gatherings|library(?:\/(?:practice|history))?|walk|about|questions(?:\/[0-7])?|sources(?:\/[a-z-]+)?|article\/[a-z-]+)$/.test(route)}
+export function pagePath(lang='ru',route='home'){return `/${lang}/${route==='home'?'':route+'/'}${route.startsWith('questions/')?'#question-'+route.split('/')[1]:route.startsWith('sources/')?'#source-'+route.split('/')[1]:''}`}
+export function readLocation(url){const u=new URL(url,'https://rainbow-welcome-home.xkbn.chatgpt.site');const parts=u.pathname.split('/').filter(Boolean);if(parts.at(-1)==='index.html')parts.pop();const explicit=codes.includes(parts[0]);const hash=u.hash.slice(1);return {lang:codes.includes(u.searchParams.get('lang'))?u.searchParams.get('lang'):explicit?parts[0]:null,route:isAppRoute(hash)?hash:explicit?parts.slice(1).join('/')||'home':parts.length?'not-found':'home',explicit}}

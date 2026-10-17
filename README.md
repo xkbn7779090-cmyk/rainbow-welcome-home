@@ -1,50 +1,47 @@
 # Rainbow — Welcome Home Center
 
-An online home for Rainbow people and anyone curious about Rainbow Gatherings: traditions, shared camp life, history, consent, preparation and finding a local circle.
+**Live:** https://rainbow-welcome-home.xkbn.chatgpt.site/
 
-**Live website:** https://rainbow-welcome-home.xkbn.chatgpt.site/
+A door into Rainbow for curious newcomers, with deeper traditions, history and resources behind it. Russian, English, Dutch, German, French and Spanish.
 
-## What is included
+## Experience
 
-- Nine substantial stories and a detailed first-visit introduction.
-- Eight frequently asked questions, searchable and directly linkable.
-- A packing checklist, an illustrated walk, a historical timeline and a glossary.
-- A separate directory of books and archives for further reading.
-- Russian, English, Dutch, German, French and Spanish, with a language switcher.
+- A concrete first-screen explanation and three clear paths: what Rainbow is, a first trip, and finding a Gathering.
+- A composite first-day story, eight quick answers, detailed preparation and nine substantial articles.
+- An interactive conceptual camp plan and a linked historical timeline.
+- Separate practice, history, books/archives and contributed-story paths.
+- A meeting directory that separates archival invitations, current published invitations and places to ask questions. Link-check dates are not event verification.
+- An archive Welcome Home photo by Jaknouse, released into the public domain, with author/date/source credit. Personal accounts and portraits are not fabricated. See `public/MEDIA-CREDITS.md`.
 
-Translations are static files prepared automatically with selected editorial corrections. They have not received complete native-speaker proofreading. Original publication titles are retained.
+## Run and verify
 
-## Run locally
-
-Use Node.js 22 or later and npm.
+Use Node.js 22+ and npm.
 
 ```sh
 npm ci
 npm run dev
-```
-
-Build and verify:
-
-```sh
 npm run build
-npm run test:sites
-node --test tests/content-locales.test.mjs
+npm test
 npm run preview
 ```
 
-Vite outputs the frontend to `dist/client`. The build also prepares the Worker entrypoint and existing Sites hosting metadata. The included project ID identifies the existing live site; use your own hosting configuration when deploying a separate copy.
+The build uses Vite and React server rendering to write 240 translated HTML pages plus the root and 404 page. Content, links, titles, descriptions, canonical/hreflang and Open Graph are available without JavaScript. A sitemap and robots.txt are included. JavaScript progressively adds search, filters, the camp plan, day selection and checklists. No automatic search-engine indexing or Telegram cache refresh is implied.
 
-## Project structure
+Canonical paths look like `/en/article/kitchen/` and `/ru/first-time/`. Old hash URLs and `?lang=` links remain readable. Language changes preserve the current material. Normal links also work without JavaScript. The checklist remains in the current app session, including client navigation; a full reload resets it.
 
-- `src/Experience.jsx` — pages, navigation, search, checklist and FAQ.
-- `src/editorial.js` and `src/materials.js` — stories, FAQ, glossary and further reading.
-- `src/i18n.jsx` and `src/locales/` — language selection and complete static translations.
-- `src/horizon.css` and `src/materials.css` — responsive Open Horizon design.
-- `public/assets/` — original generated landscape illustrations and site mark.
-- `worker/` and `scripts/prepare-sites-build.mjs` — Sites runtime packaging.
+## Source
 
-Navigation uses hash routes. A language can be shared in a URL, for example `?lang=en#questions/1`. Language preference is stored locally. Checklist marks last for the current open app session.
+- `src/Experience.jsx`, `src/Doors.jsx`, `src/Sources.jsx`: pages and interactions.
+- `src/editorial.js`, `src/materials.js`: long-form stories, FAQ, bibliography and glossary.
+- `src/door-content.js`: first-day copy, cautions, invitations, connection resources and dated link reviews.
+- `src/meeting-policy.js`: future-listing eligibility; a third-party calendar is not enough.
+- `src/i18n.jsx`, `src/locales/`: complete static translations and language switching.
+- `src/routing.js`, `src/SiteLink.jsx`, `src/seo.js`: ordinary page URLs, progressive navigation and metadata.
+- `src/entry-server.jsx`, `scripts/prerender.mjs`: translated pre-rendering.
+- `worker/`, `scripts/prepare-sites-build.mjs`: Sites packaging and real 404 responses.
 
-For translation maintenance, extract the catalog with `node scripts/extract-catalog.mjs`. `scripts/translate-catalog.py` is an optional preparation tool that sends public editorial strings to an external translation endpoint; it is not used by the live site. Review translations before publishing. `scripts/review-center-locales.mjs` applies selected corrections and prunes obsolete keys.
+Translations are automatically prepared with selected editorial corrections. They have not received complete native-speaker proofreading. Source publication titles remain in their original languages.
 
-This repository contains the current website source. Supplied source PDFs, private forum content, credentials, personal contact lists, local backups and development screenshots are excluded. Landscape artwork is illustrative, not documentation of a particular Gathering. No confirmed calendar of future Gatherings or registration service is provided.
+`.openai/hosting.json` identifies the existing live Sites project. Use your own hosting configuration when deploying a separate copy. Public frontend output is `dist/client`; the build also emits `dist/server/index.js` and deployment metadata.
+
+See `CONTRIBUTING.md` for the editorial workflow. The repository excludes supplied PDFs, credentials, private forum material, personal contacts, local backups and development screenshots.

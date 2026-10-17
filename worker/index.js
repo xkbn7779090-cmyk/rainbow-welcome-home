@@ -7,9 +7,15 @@ export default {
       return response;
     }
 
-    const indexUrl = new URL(request.url);
-    indexUrl.pathname = "/index.html";
-    indexUrl.search = "";
-    return env.ASSETS.fetch(new Request(indexUrl, request));
+    // Every public page is pre-rendered. Unknown HTML URLs must remain 404,
+    // rather than returning the home page with a misleading 200 status.
+    const missingUrl = new URL(request.url);
+    missingUrl.pathname = "/404.html";
+    missingUrl.search = "";
+    const missing = await env.ASSETS.fetch(new Request(missingUrl, request));
+    if (!missing.ok) return response;
+    const headers = new Headers(missing.headers);
+    headers.set("X-Robots-Tag", "noindex");
+    return new Response(request.method === "HEAD" ? null : missing.body, { status: 404, headers });
   },
 };

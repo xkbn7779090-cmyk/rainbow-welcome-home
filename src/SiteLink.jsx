@@ -1,0 +1,4 @@
+import React from 'react';
+import {useI18n} from './i18n';
+import {isAppRoute,pagePath} from './routing';
+export function SiteLink({href,onClick,...props}){const {lang}=useI18n();const [route,anchor]=href?.startsWith('#')?href.slice(1).split('#'):[];const internal=route&&isAppRoute(route);const path=internal?(anchor?pagePath(lang,route).split('#')[0]+'#'+anchor:pagePath(lang,route)):href;return <a {...props} href={path} onClick={event=>{onClick?.(event);if(!internal||event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey||props.target)return;event.preventDefault();history.pushState(null,'',path);window.dispatchEvent(new PopStateEvent('popstate'));if(anchor)requestAnimationFrame(()=>document.getElementById(anchor)?.scrollIntoView({block:'start'}));}}/>}

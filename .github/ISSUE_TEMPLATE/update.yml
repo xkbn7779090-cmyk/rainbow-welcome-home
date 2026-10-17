@@ -1,0 +1,23 @@
+name: Update an invitation or resource / Обновить сведения
+description: Propose a checked public source, correction, or invitation. No private locations or contacts.
+title: '[Update] '
+body:
+  - type: input
+    id: url
+    attributes:
+      label: Public source URL
+    validations:
+      required: true
+  - type: input
+    id: checked
+    attributes:
+      label: Date checked (YYYY-MM-DD)
+    validations:
+      required: true
+  - type: textarea
+    id: correction
+    attributes:
+      label: What should change?
+      description: For invitations include broad region, type, published dates and evidence that the community agrees to public distribution. Do not publish precise coordinates or private contacts.
+    validations:
+      required: true
