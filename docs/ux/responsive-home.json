@@ -1,0 +1,102 @@
+{
+  "mobileLanguages": [
+    {
+      "client": 305,
+      "ctaBottom": 687,
+      "cyrillic": true,
+      "lang": "ru",
+      "scroll": 305,
+      "width": 320
+    },
+    {
+      "client": 305,
+      "ctaBottom": 631,
+      "cyrillic": false,
+      "lang": "en",
+      "scroll": 305,
+      "width": 320
+    },
+    {
+      "client": 305,
+      "ctaBottom": 619,
+      "cyrillic": false,
+      "lang": "nl",
+      "scroll": 305,
+      "width": 320
+    },
+    {
+      "client": 305,
+      "ctaBottom": 655,
+      "cyrillic": false,
+      "lang": "de",
+      "scroll": 305,
+      "width": 320
+    },
+    {
+      "client": 305,
+      "ctaBottom": 680,
+      "cyrillic": false,
+      "lang": "fr",
+      "scroll": 305,
+      "width": 320
+    },
+    {
+      "client": 305,
+      "ctaBottom": 655,
+      "cyrillic": false,
+      "lang": "es",
+      "scroll": 305,
+      "width": 320
+    }
+  ],
+  "sizes": [
+    {
+      "client": 305,
+      "ctaBottom": 687,
+      "height": 844,
+      "lang": "ru",
+      "scroll": 305,
+      "width": 320
+    },
+    {
+      "client": 360,
+      "ctaBottom": 654,
+      "height": 844,
+      "lang": "ru",
+      "scroll": 360,
+      "width": 375
+    },
+    {
+      "client": 375,
+      "ctaBottom": 609,
+      "height": 844,
+      "lang": "ru",
+      "scroll": 375,
+      "width": 390
+    },
+    {
+      "client": 753,
+      "ctaBottom": 825,
+      "height": 900,
+      "lang": "ru",
+      "scroll": 753,
+      "width": 768
+    },
+    {
+      "client": 1009,
+      "ctaBottom": 686,
+      "height": 900,
+      "lang": "ru",
+      "scroll": 1009,
+      "width": 1024
+    },
+    {
+      "client": 1425,
+      "ctaBottom": 745,
+      "height": 900,
+      "lang": "ru",
+      "scroll": 1425,
+      "width": 1440
+    }
+  ]
+}

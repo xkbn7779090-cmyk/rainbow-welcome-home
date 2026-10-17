@@ -1,0 +1,44 @@
+[
+  {
+    "canonical": "https://rainbow-welcome-home.xkbn.chatgpt.site/ru/",
+    "lang": "ru",
+    "ogLocale": "ru_RU",
+    "twitterMatches": true,
+    "xDefault": true
+  },
+  {
+    "canonical": "https://rainbow-welcome-home.xkbn.chatgpt.site/en/",
+    "lang": "en",
+    "ogLocale": "en_GB",
+    "twitterMatches": true,
+    "xDefault": true
+  },
+  {
+    "canonical": "https://rainbow-welcome-home.xkbn.chatgpt.site/nl/",
+    "lang": "nl",
+    "ogLocale": "nl_NL",
+    "twitterMatches": true,
+    "xDefault": true
+  },
+  {
+    "canonical": "https://rainbow-welcome-home.xkbn.chatgpt.site/de/",
+    "lang": "de",
+    "ogLocale": "de_DE",
+    "twitterMatches": true,
+    "xDefault": true
+  },
+  {
+    "canonical": "https://rainbow-welcome-home.xkbn.chatgpt.site/fr/",
+    "lang": "fr",
+    "ogLocale": "fr_FR",
+    "twitterMatches": true,
+    "xDefault": true
+  },
+  {
+    "canonical": "https://rainbow-welcome-home.xkbn.chatgpt.site/es/",
+    "lang": "es",
+    "ogLocale": "es_ES",
+    "twitterMatches": true,
+    "xDefault": true
+  }
+]

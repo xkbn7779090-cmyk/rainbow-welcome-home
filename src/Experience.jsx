@@ -1,3 +1,5 @@
+import {Checklist,HistoryTimeline} from './Journey';
+import {readPacking,writePacking} from './packing-state';
 import {pageMeta,updatePageMeta} from './seo';
 import {SiteLink} from './SiteLink';
 import {DoorHome,QuestionsPage,KnowledgePaths,ParticipantVoices,Meetings,CampPlan} from './Doors';
@@ -15,30 +17,6 @@ const jump = id => document.getElementById(id)?.scrollIntoView({
   behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
   block: "start"
 });
-function Checklist({
-  checks,
-  setChecks
-}) {
-  const {
-    t,
-    content,
-    lang
-  } = useI18n();
-  const {
-    articles,
-    arrival,
-    finding,
-    about,
-    checklist,
-    story,
-    walkStops,
-    sourceNote,
-    resources,
-    sourceLinks,
-    glossary
-  } = content;
-  return <section className="packing" id="packing"><div><span className="eyebrow">{t("Практика · с собой")}</span><h2>{t("Собрать необходимое.")}<br />{t("Оставить место новому.")}</h2><p>{t("Начни с необходимого и дополни список под погоду, дорогу и свои потребности.")}</p><span className="pack-count" aria-live="polite">{checks.length.toString().padStart(2, "0")} <small>/ {checklist.length.toString().padStart(2, "0")}{t(" собрано")}</small></span></div><div className="checklist">{checklist.map((label, i) => <label key={label}><input type="checkbox" checked={checks.includes(i)} onChange={() => setChecks(checks.includes(i) ? checks.filter(x => x !== i) : [...checks, i])} /><span>{label}</span></label>)}<p className="caption">{t("Отметки сохраняются до перезагрузки страницы.")}</p></div></section>;
-}
 function Related({
   exclude
 }) {
@@ -66,7 +44,8 @@ function LongRead({
   doc,
   type,
   checks,
-  setChecks
+  setChecks,
+  storageAvailable
 }) {
   const {
     t,
@@ -97,15 +76,15 @@ function LongRead({
     document.querySelectorAll("[data-chapter]").forEach(el => io.observe(el));
     return () => io.disconnect();
   }, [doc]);
-  return <><section className="article-masthead wrap"><SiteLink className="back-link" href={type === "article" ? "#library" : "#home"}><ArrowLeft size={18} />{type === "article" ? t("Библиотека") : t("Главная")}</SiteLink><div className="article-meta"><span>{type === "article" ? doc.category : type === "first-time" ? t("Первый раз") : type === "gatherings" ? t("Встречи") : type === "about" ? t("Наш дом") : t("Знакомство")}</span><span>{readingTime(doc)}{t(" минут чтения")}</span><span>{doc.sections.length}{t(" глав")}</span></div><h1>{doc.title}</h1><p className="dek">{doc.description}</p></section>{type === "gatherings" && <Meetings />}
+  return <><section className={"article-masthead wrap"+(type==="gatherings"?" finding-masthead":"")}><SiteLink className="back-link" href={type === "article" ? "#library" : "#home"}><ArrowLeft size={18} />{type === "article" ? t("Библиотека") : t("Главная")}</SiteLink><div className="article-meta"><span>{type === "article" ? doc.category : type === "first-time" ? t("Первый раз") : type === "gatherings" ? t("Встречи") : type === "about" ? t("Наш дом") : t("Знакомство")}</span><span>{readingTime(doc)}{t(" минут чтения")}</span><span>{doc.sections.length}{t(" глав")}</span></div><h1>{doc.title}</h1><p className="dek">{doc.description}</p></section>{type === "gatherings" && <Meetings />}{type === "first-time" && <div className="wrap"><Checklist checks={checks} setChecks={setChecks} storageAvailable={storageAvailable}/></div>}
  <div className="longread-layout wrap"><aside className="contents"><span className="eyebrow">{t("В этой истории")}</span><nav aria-label={t("Главы истории")}>{doc.sections.map((s, i) => <button key={s.title} aria-current={active === i ? "location" : undefined} onClick={() => jump(`chapter-${i}`)}><span>{String(i + 1).padStart(2, "0")}</span>{s.title}</button>)}</nav>{type === "first-time" && <button className="text-link packing-jump" onClick={() => jump("packing")}>{t("К списку вещей ")}<ArrowDown size={18} /></button>}</aside>
- <div className="longread-body">{doc.timeline && <div className="timeline" aria-label={t("Ориентиры истории")}>{doc.timeline.map(([year, text]) => <div key={year}><SiteLink href={"#chapter-"+({"1972":0,"1983":2,"1998":3}[year]??5)}><b>{year}</b></SiteLink><p>{text}</p></div>)}</div>}{doc.sections.map((s, i) => <section className="reading-chapter" data-chapter={i} id={`chapter-${i}`} key={s.title}><span className="chapter-label">{String(i + 1).padStart(2, "0")} / {doc.sections.length.toString().padStart(2, "0")}</span><h2>{s.title}</h2>{s.paragraphs.map(p => <p key={p}>{p}</p>)}{i === 2 && <figure className="inline-landscape"><img src="/assets/horizon-banner.webp" alt={t("Иллюстрация: берег синего озера с соснами и горами")} loading="lazy" /><figcaption>{t("Художественный образ · не место конкретной встречи")}</figcaption></figure>}</section>)}</div></div>
- {type === "article" && <aside className="article-further wrap"><details><summary>{t("Почитать по теме")}</summary><div>{(doc.sourceIds || sourceLinks[doc.id] || []).map(id=>resources.find(r=>r.id===id)).filter(Boolean).map(r=><SiteLink key={r.id} href={`#sources/${r.id}`}>{r.title}<ArrowRight size={17}/></SiteLink>)}</div></details></aside>}
- {type === "first-time" && <div className="wrap"><Checklist checks={checks} setChecks={setChecks} /></div>}
+ <div className="longread-body">{doc.timeline && <HistoryTimeline entries={doc.timeline}/>}{doc.sections.map((s, i) => <section className="reading-chapter" data-chapter={i} id={`chapter-${i}`} key={s.title}><span className="chapter-label">{String(i + 1).padStart(2, "0")} / {doc.sections.length.toString().padStart(2, "0")}</span><h2>{s.title}</h2>{s.paragraphs.map(p => <p key={p}>{p}</p>)}{i === 2 && <figure className="inline-landscape"><img src="/assets/horizon-banner.webp" alt={t("Иллюстрация: берег синего озера с соснами и горами")} loading="lazy" /><figcaption>{t("Художественный образ · не место конкретной встречи")}</figcaption></figure>}</section>)}</div></div>
+ {type === "article" && <aside className="article-further wrap"><div className="article-sources"><h2>{t("Почитать по теме")}</h2><p className="caption">{t("Исторические документы и описания местных практик помогают сравнить разные взгляды. Они не устанавливают общих правил для всех встреч.")}</p><div>{(doc.sourceIds || sourceLinks[doc.id] || []).map(id=>resources.find(r=>r.id===id)).filter(Boolean).map(r=><SiteLink key={r.id} href={`#sources/${r.id}`}>{r.title}<ArrowRight size={17}/></SiteLink>)}</div></div></aside>}
+
 
  <Related exclude={doc.id} /></>;
 }
-function Home(){return <DoorHome/>}
+function Home(props){return <DoorHome {...props}/>}
 function Library({
   mode,
   query,
@@ -219,6 +198,10 @@ function Experience({initialRoute}) {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState(t("Все"));
   const [checks, setChecks] = useState([]);
+  const [packingLoaded,setPackingLoaded]=useState(false);
+  const [storageAvailable,setStorageAvailable]=useState(true);
+  useEffect(()=>{try{setChecks(readPacking(localStorage))}catch{setStorageAvailable(false)}setPackingLoaded(true)},[]);
+  useEffect(()=>{if(packingLoaded){try{setStorageAvailable(writePacking(localStorage,checks))}catch{setStorageAvailable(false)}}},[checks,packingLoaded]);
   const [progress, setProgress] = useState(0);
   const searchRef = useRef(null);
   useEffect(() => {
@@ -247,13 +230,16 @@ function Experience({initialRoute}) {
   }, [route, lang]);
   useEffect(() => {
     const previous = document.activeElement;
+    const background=[...document.querySelectorAll('#content,.site-header,.site-footer,.mobile-nav,.skip')];
     if (search) {
       searchRef.current?.focus();
       document.body.style.overflow = "hidden";
+      background.forEach(el=>{el.setAttribute('inert','');el.setAttribute('aria-hidden','true')});
     }
     const key = e => {
       if (e.key === "Escape") {
         setSearch(false);
+        if(document.querySelector(".mobile-nav"))document.querySelector(".menu-trigger")?.focus();
         setMenu(false);
       }
       if (search && e.key === "Tab") {
@@ -271,6 +257,7 @@ function Experience({initialRoute}) {
     return () => {
       removeEventListener("keydown", key);
       document.body.style.overflow = "";
+      if(search)background.forEach(el=>{el.removeAttribute('inert');el.removeAttribute('aria-hidden')});
       if (search) previous?.focus();
     };
   }, [search]);
@@ -278,7 +265,7 @@ function Experience({initialRoute}) {
   const searchResults = allDocs.filter(a => searchableText(a).toLowerCase().includes(query.toLowerCase().trim()));
   const goto = r => {
     setSearch(false);
-    history.pushState(null,"",pagePath(lang,r)); setRoute(r); window.scrollTo(0,0);
+    history.pushState(null,"",pagePath(lang,r)); setRoute(r); window.scrollTo(0,0); requestAnimationFrame(()=>document.getElementById("content")?.focus({preventScroll:true}));
   };
   const known = ["home", "start", "first-time", "gatherings", "library", "walk", "about"].includes(route) || route.startsWith("sources") || route.startsWith("questions") || route.startsWith("library") || article;
   useEffect(() => {
@@ -295,12 +282,12 @@ function Experience({initialRoute}) {
     }} aria-hidden="true" /><header className="site-header"><SiteLink className="brand" href="#home" aria-label={t("Rainbow — главная")}>{brand}</SiteLink><nav aria-label={t("Главное меню")}>{nav.map(([r, label]) => <SiteLink key={r} href={`#${r}`} aria-current={route === r ? "page" : undefined}>{label}</SiteLink>)}</nav><div className="header-tools"><LanguagePicker /><button className="search-trigger" onClick={() => {
           setMenu(false);
           setSearch(true);
-        }} aria-label={t("Поиск по сайту")}><MagnifyingGlass size={21} /><span>{t("Поиск по сайту…")}</span></button><button className="icon-button menu-trigger" aria-expanded={menu} aria-label={menu ? t("Закрыть меню") : t("Открыть меню")} onClick={() => setMenu(!menu)}>{menu ? <X size={25} /> : <List size={25} />}</button></div></header>
- {menu && <nav className="mobile-nav" aria-label={t("Мобильное меню")}>{nav.map(([r, label]) => <SiteLink href={`#${r}`} key={r}>{label}{arrow}</SiteLink>)}<SiteLink href="#walk">{t("Прогулка по Радуге ")}{arrow}</SiteLink><SiteLink href="#sources">{t("Книги и архивы")}{arrow}</SiteLink></nav>}
+        }} aria-label={t("Поиск по сайту")}><MagnifyingGlass size={21} /><span>{t("Поиск по сайту…")}</span></button><button className="icon-button menu-trigger" aria-expanded={menu} aria-controls="mobile-menu" aria-label={menu ? t("Закрыть меню") : t("Открыть меню")} onClick={() => setMenu(!menu)}>{menu ? <X size={25} /> : <List size={25} />}</button></div></header>
+ {menu && <nav id="mobile-menu" className="mobile-nav" aria-label={t("Мобильное меню")}>{nav.map(([r, label]) => <SiteLink href={`#${r}`} key={r}>{label}{arrow}</SiteLink>)}<SiteLink href="#walk">{t("Прогулка по Радуге ")}{arrow}</SiteLink><SiteLink href="#sources">{t("Книги и архивы")}{arrow}</SiteLink></nav>}
  <main id="content" tabIndex={-1}>
- {route === "home" && <Home />}
+ {route === "home" && <Home checks={checks} setChecks={setChecks} storageAvailable={storageAvailable} />}
  {route === "start" && <LongRead key="start" doc={articles[0]} type="start" />}
- {route === "first-time" && <LongRead key="first-time" doc={arrival} type="first-time" checks={checks} setChecks={setChecks} />}
+ {route === "first-time" && <LongRead key="first-time" doc={arrival} type="first-time" checks={checks} setChecks={setChecks} storageAvailable={storageAvailable} />}
  {route === "gatherings" && <LongRead key="gatherings" doc={finding} type="gatherings" />}
  {route === "about" && <LongRead key="about" doc={about} type="about" />}
  {route.startsWith("questions") && <QuestionsPage target={route.split("/")[1]} />}

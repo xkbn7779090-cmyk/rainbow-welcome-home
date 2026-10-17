@@ -9,9 +9,13 @@ A door into Rainbow for curious newcomers, with deeper traditions, history and r
 - A concrete first-screen explanation and three clear paths: what Rainbow is, a first trip, and finding a Gathering.
 - A composite first-day story, eight quick answers, detailed preparation and nine substantial articles.
 - An interactive conceptual camp plan and a linked historical timeline.
+- A categorized packing checklist, shared across languages and saved in the browser, with optional items and a reset control.
+- Region and text filters for public resources, plus a separate invitation archive and a short first-message guide.
 - Separate practice, history, books/archives and contributed-story paths.
 - A meeting directory that separates archival invitations, current published invitations and places to ask questions. Link-check dates are not event verification.
 - An archive Welcome Home photo by Jaknouse, released into the public domain, with author/date/source credit. Personal accounts and portraits are not fabricated. See `public/MEDIA-CREDITS.md`.
+
+The editorial UX update is documented in [the audit and verification report](docs/ux/README.md), including actual before/after screenshots. This branch has not been deployed. An authenticated forum review informs the resource description; private announcements, contacts and coordinates are not copied into the public repository.
 
 ## Run and verify
 

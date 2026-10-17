@@ -1,0 +1,74 @@
+[
+  {
+    "client": 305,
+    "path": "/ru/first-time/",
+    "scroll": 305,
+    "width": 320
+  },
+  {
+    "client": 305,
+    "path": "/ru/gatherings/",
+    "scroll": 305,
+    "width": 320
+  },
+  {
+    "client": 305,
+    "path": "/en/first-time/",
+    "scroll": 305,
+    "width": 320
+  },
+  {
+    "client": 305,
+    "path": "/en/gatherings/",
+    "scroll": 305,
+    "width": 320
+  },
+  {
+    "client": 305,
+    "path": "/nl/first-time/",
+    "scroll": 305,
+    "width": 320
+  },
+  {
+    "client": 305,
+    "path": "/nl/gatherings/",
+    "scroll": 305,
+    "width": 320
+  },
+  {
+    "client": 305,
+    "path": "/de/first-time/",
+    "scroll": 305,
+    "width": 320
+  },
+  {
+    "client": 305,
+    "path": "/de/gatherings/",
+    "scroll": 305,
+    "width": 320
+  },
+  {
+    "client": 305,
+    "path": "/fr/first-time/",
+    "scroll": 305,
+    "width": 320
+  },
+  {
+    "client": 305,
+    "path": "/fr/gatherings/",
+    "scroll": 305,
+    "width": 320
+  },
+  {
+    "client": 305,
+    "path": "/es/first-time/",
+    "scroll": 305,
+    "width": 320
+  },
+  {
+    "client": 305,
+    "path": "/es/gatherings/",
+    "scroll": 305,
+    "width": 320
+  }
+]
