@@ -1,3 +1,4 @@
+import {archiveSelection} from './archive-content.js';
 import React,{createContext,useCallback,useContext,useMemo,useRef,useState,useEffect} from 'react';
 import {Globe} from '@phosphor-icons/react';
 import * as editorial from './editorial.js';
@@ -6,7 +7,7 @@ import * as doors from './door-content.js';
 import {pagePath,readLocation} from './routing.js';
 export const languages=[['ru','Русский'],['en','English'],['nl','Nederlands'],['de','Deutsch'],['fr','Français'],['es','Español']];
 const loaders={en:()=>import('./locales/en.json'),nl:()=>import('./locales/nl.json'),de:()=>import('./locales/de.json'),fr:()=>import('./locales/fr.json'),es:()=>import('./locales/es.json')};
-const base=Object.fromEntries(Object.entries({...editorial,resources,sourceLinks,glossary,...doors}).filter(([,v])=>typeof v!=='function'));
+const base=Object.fromEntries(Object.entries({...editorial,archiveSelection,resources,sourceLinks,glossary,...doors}).filter(([,v])=>typeof v!=='function'));
 const Context=createContext(null);const cache={ru:{}};
 export async function getDictionary(code){if(!cache[code])cache[code]=(await loaders[code]()).default;return cache[code]}
 function preferred(){if(typeof location==='undefined')return 'ru';let value=readLocation(location.href).lang;if(!value){try{value=localStorage.getItem('rainbow-language')}catch{}}return languages.some(([code])=>code===value)?value:'ru'}

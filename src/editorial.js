@@ -1,3 +1,4 @@
+import {archiveAdditions} from './archive-content.js';
 import {extraArticles} from './materials.js';
 export const articles=[
   {
@@ -252,6 +253,7 @@ export const articles=[
   }
 ];
 articles.push(...extraArticles);
+for(const [id,sections] of Object.entries(archiveAdditions)){const doc=articles.find(a=>a.id===id);if(doc){doc.sections.push(...sections.map(([title,text])=>({title,paragraphs:[text]})));doc.updatedAt='2026-11-13';}}
 export const arrival={
   "title": "Первый раз: от приглашения до своей палатки",
   "description": "Подробный маршрут подготовки, который помогает оставить место неожиданному, не отдавая ему всё на волю случая.",

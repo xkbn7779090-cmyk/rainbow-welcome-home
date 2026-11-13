@@ -1,3 +1,4 @@
+import {Archive} from './Archive';
 import {Checklist,HistoryTimeline} from './Journey';
 import {readPacking,writePacking} from './packing-state';
 import {pageMeta,updatePageMeta} from './seo';
@@ -76,13 +77,13 @@ function LongRead({
     document.querySelectorAll("[data-chapter]").forEach(el => io.observe(el));
     return () => io.disconnect();
   }, [doc]);
-  return <><section className={"article-masthead wrap"+(type==="gatherings"?" finding-masthead":"")}><SiteLink className="back-link" href={type === "article" ? "#library" : "#home"}><ArrowLeft size={18} />{type === "article" ? t("Библиотека") : t("Главная")}</SiteLink><div className="article-meta"><span>{type === "article" ? doc.category : type === "first-time" ? t("Первый раз") : type === "gatherings" ? t("Встречи") : type === "about" ? t("Наш дом") : t("Знакомство")}</span><span>{readingTime(doc)}{t(" минут чтения")}</span><span>{doc.sections.length}{t(" глав")}</span></div><h1>{doc.title}</h1><p className="dek">{doc.description}</p></section>{type === "gatherings" && <Meetings />}{type === "first-time" && <div className="wrap"><Checklist checks={checks} setChecks={setChecks} storageAvailable={storageAvailable}/></div>}
+  return <><section className={"article-masthead wrap"+(type==="gatherings"?" finding-masthead":"")}><SiteLink className="back-link" href={type === "article" ? "#library" : "#home"}><ArrowLeft size={18} />{type === "article" ? t("Библиотека") : t("Главная")}</SiteLink><div className="article-meta"><span>{type === "article" ? doc.category : type === "first-time" ? t("Первый раз") : type === "gatherings" ? t("Встречи") : type === "about" ? t("Наш дом") : t("Знакомство")}</span><span>{readingTime(doc)}{t(" минут чтения")}</span><span>{doc.sections.length}{t(" глав")}</span>{doc.updatedAt&&<span>{t("Дополнено: ")}<time dateTime={doc.updatedAt}>{new Intl.DateTimeFormat(lang,{dateStyle:"long",timeZone:"UTC"}).format(new Date(doc.updatedAt+"T12:00:00Z"))}</time></span>}</div><h1>{doc.title}</h1><p className="dek">{doc.description}</p></section>{type === "gatherings" && <Meetings />}{type === "first-time" && <div className="wrap"><Checklist checks={checks} setChecks={setChecks} storageAvailable={storageAvailable}/></div>}
  <div className="longread-layout wrap"><aside className="contents"><span className="eyebrow">{t("В этой истории")}</span><nav aria-label={t("Главы истории")}>{doc.sections.map((s, i) => <button key={s.title} aria-current={active === i ? "location" : undefined} onClick={() => jump(`chapter-${i}`)}><span>{String(i + 1).padStart(2, "0")}</span>{s.title}</button>)}</nav>{type === "first-time" && <button className="text-link packing-jump" onClick={() => jump("packing")}>{t("К списку вещей ")}<ArrowDown size={18} /></button>}</aside>
  <div className="longread-body">{doc.timeline && <HistoryTimeline entries={doc.timeline}/>}{doc.sections.map((s, i) => <section className="reading-chapter" data-chapter={i} id={`chapter-${i}`} key={s.title}><span className="chapter-label">{String(i + 1).padStart(2, "0")} / {doc.sections.length.toString().padStart(2, "0")}</span><h2>{s.title}</h2>{s.paragraphs.map(p => <p key={p}>{p}</p>)}{i === 2 && <figure className="inline-landscape"><img src="/assets/horizon-banner.webp" alt={t("Иллюстрация: берег синего озера с соснами и горами")} loading="lazy" /><figcaption>{t("Художественный образ · не место конкретной встречи")}</figcaption></figure>}</section>)}</div></div>
  {type === "article" && <aside className="article-further wrap"><div className="article-sources"><h2>{t("Почитать по теме")}</h2><p className="caption">{t("Исторические документы и описания местных практик помогают сравнить разные взгляды. Они не устанавливают общих правил для всех встреч.")}</p><div>{(doc.sourceIds || sourceLinks[doc.id] || []).map(id=>resources.find(r=>r.id===id)).filter(Boolean).map(r=><SiteLink key={r.id} href={`#sources/${r.id}`}>{r.title}<ArrowRight size={17}/></SiteLink>)}</div></div></aside>}
 
 
- <Related exclude={doc.id} /></>;
+ {["origins","history","culture"].includes(doc.id)&&<div className="wrap"><SiteLink className="article-archive-link" href="#archive">{t("Живая память Радуги")}{arrow}</SiteLink></div>}<Related exclude={doc.id} /></>;
 }
 function Home(props){return <DoorHome {...props}/>}
 function Library({
@@ -168,8 +169,8 @@ function Experience({initialRoute}) {
     sourceLinks,
     glossary
   } = content;
-  const nav = [["start", t("Что это?")], ["first-time", t("Еду впервые")], ["gatherings", t("Где встреча?")]];
-  const allDocs = [...content.faq.map((item,index)=>({id:`question-${index}`,route:`questions/${index}`,title:item.question,description:item.answer,category:t("Вопросы и ответы"),sections:[{title:item.question,paragraphs:[item.answer]}]})), ...articles, {
+  const nav = [["start", t("Что это?")], ["first-time", t("Еду впервые")], ["gatherings", t("Где встреча?")], ["archive", t("История и музыка")]];
+  const allDocs = [{id:"archive",route:"archive",title:t("Живая память Радуги"),description:t("Письма, песни и история встреч"),category:t("Книги и архивы"),sections:content.archiveSelection.map(item=>({title:item.title,paragraphs:[item.note,item.year]}))}, ...content.faq.map((item,index)=>({id:`question-${index}`,route:`questions/${index}`,title:item.question,description:item.answer,category:t("Вопросы и ответы"),sections:[{title:item.question,paragraphs:[item.answer]}]})), ...articles, {
     ...arrival,
     id: "first-time",
     category: t("Подготовка")
@@ -267,7 +268,7 @@ function Experience({initialRoute}) {
     setSearch(false);
     history.pushState(null,"",pagePath(lang,r)); setRoute(r); window.scrollTo(0,0); requestAnimationFrame(()=>document.getElementById("content")?.focus({preventScroll:true}));
   };
-  const known = ["home", "start", "first-time", "gatherings", "library", "walk", "about"].includes(route) || route.startsWith("sources") || route.startsWith("questions") || route.startsWith("library") || article;
+  const known = ["home", "archive", "start", "first-time", "gatherings", "library", "walk", "about"].includes(route) || route.startsWith("sources") || route.startsWith("questions") || route.startsWith("library") || article;
   useEffect(() => {
     setCategory(t("Все"));
     setQuery("");
@@ -285,6 +286,7 @@ function Experience({initialRoute}) {
         }} aria-label={t("Поиск по сайту")}><MagnifyingGlass size={21} /><span>{t("Поиск по сайту…")}</span></button><button className="icon-button menu-trigger" aria-expanded={menu} aria-controls="mobile-menu" aria-label={menu ? t("Закрыть меню") : t("Открыть меню")} onClick={() => setMenu(!menu)}>{menu ? <X size={25} /> : <List size={25} />}</button></div></header>
  {menu && <nav id="mobile-menu" className="mobile-nav" aria-label={t("Мобильное меню")}>{nav.map(([r, label]) => <SiteLink href={`#${r}`} key={r}>{label}{arrow}</SiteLink>)}<SiteLink href="#walk">{t("Прогулка по Радуге ")}{arrow}</SiteLink><SiteLink href="#sources">{t("Книги и архивы")}{arrow}</SiteLink></nav>}
  <main id="content" tabIndex={-1}>
+ {route === "archive" && <Archive/>}
  {route === "home" && <Home checks={checks} setChecks={setChecks} storageAvailable={storageAvailable} />}
  {route === "start" && <LongRead key="start" doc={articles[0]} type="start" />}
  {route === "first-time" && <LongRead key="first-time" doc={arrival} type="first-time" checks={checks} setChecks={setChecks} storageAvailable={storageAvailable} />}
@@ -297,7 +299,7 @@ function Experience({initialRoute}) {
  {article && <LongRead key={article.id} doc={article} type="article" />}
  {!known && <section className="not-found wrap"><span className="eyebrow">{t("404 · вне тропы")}</span><h1>{t("Эта страница")}<br />{t("ещё не появилась.")}</h1><SiteLink className="button" href="#home">{t("Вернуться домой ")}{arrow}</SiteLink></section>}
  </main>
- <footer className="site-footer"><div className="wrap"><div className="footer-top"><SiteLink href="#home" className="brand">{brand}</SiteLink><span>{t("Временные встречи.")}<br />{t("Живые связи.")}</span><SiteLink href="#first-time" className="text-link">{t("Собраться в дорогу ")}{arrow}</SiteLink></div><div className="footer-bottom"><p>{t("Welcome Home Center · Радуга онлайн.")}<br />{t("Знакомство, традиции и дорога к своему кругу.")}</p><nav aria-label={t("Дополнительная навигация")}><SiteLink href="#questions">{t("Вопросы и ответы")}</SiteLink><SiteLink href="#walk">{t("Прогулка")}</SiteLink><SiteLink href="#sources">{t("Книги и архивы")}</SiteLink><SiteLink href="#about">{t("Наш дом")}</SiteLink><LanguagePicker /></nav><SiteLink href="#home">Welcome Home <ArrowUpRight size={16} /></SiteLink></div>{lang !== "ru" && <p className="translation-note">{t("Перевод с русского: автоматическая подготовка и выборочная редакторская проверка. Названия источников сохранены в оригинале.")}</p>}</div></footer>
+ <footer className="site-footer"><div className="wrap"><div className="footer-top"><SiteLink href="#home" className="brand">{brand}</SiteLink><span>{t("Временные встречи.")}<br />{t("Живые связи.")}</span><SiteLink href="#first-time" className="text-link">{t("Собраться в дорогу ")}{arrow}</SiteLink></div><div className="footer-bottom"><p>{t("Welcome Home Center · Радуга онлайн.")}<br />{t("Знакомство, традиции и дорога к своему кругу.")}</p><nav aria-label={t("Дополнительная навигация")}><SiteLink href="#questions">{t("Вопросы и ответы")}</SiteLink><SiteLink href="#walk">{t("Прогулка")}</SiteLink><SiteLink href="#archive">{t("Живая память Радуги")}</SiteLink><SiteLink href="#sources">{t("Книги и архивы")}</SiteLink><SiteLink href="#about">{t("Наш дом")}</SiteLink><LanguagePicker /></nav><SiteLink href="#home">Welcome Home <ArrowUpRight size={16} /></SiteLink></div>{lang !== "ru" && <p className="translation-note">{t("Перевод с русского: автоматическая подготовка и выборочная редакторская проверка. Названия источников сохранены в оригинале.")}</p>}</div></footer>
  {search && <div className="search-overlay" role="dialog" aria-modal="true" aria-labelledby="search-title"><div className="search-panel"><button className="icon-button close" aria-label={t("Закрыть поиск")} onClick={() => setSearch(false)}><X size={25} /></button><span className="eyebrow">{t("О чём тебе хочется узнать?")}</span><h2 id="search-title">{t("С чего начнём?")}</h2><label className="search-field"><MagnifyingGlass size={24} /><input ref={searchRef} value={query} aria-label={t("Поисковый запрос")} placeholder={t("Кухня, согласие, дорога…")} onChange={e => setQuery(e.target.value)} /></label><p className="caption" aria-live="polite">{t("Найдено: ")}{searchResults.length}</p><div className="search-results">{searchResults.map(d => <button key={d.id} onClick={() => goto(hrefFor(d).slice(1))}><span><small>{d.category} · {readingTime(d)}{t(" мин")}</small>{d.title}</span>{arrow}</button>)}{!searchResults.length && <div className="empty"><h3>{t("Пока ничего не нашлось.")}</h3><p>{t("Попробуйте другое слово или откройте всю библиотеку.")}</p><button className="text-link" onClick={() => {
               setQuery("");
               setCategory(t("Все"));

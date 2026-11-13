@@ -8,7 +8,7 @@
     "build": "vite build && node scripts/prerender.mjs && node scripts/prepare-sites-build.mjs",
     "preview": "vite preview",
     "test:sites": "node --test tests/sites-worker.test.mjs",
-    "test": "node --test tests/sites-worker.test.mjs tests/content-locales.test.mjs tests/prerender.test.mjs tests/ux-behavior.test.mjs",
+    "test": "node --test tests/sites-worker.test.mjs tests/content-locales.test.mjs tests/prerender.test.mjs tests/ux-behavior.test.mjs tests/archive.test.mjs",
     "test:seo": "node --test tests/prerender.test.mjs"
   },
   "dependencies": {
